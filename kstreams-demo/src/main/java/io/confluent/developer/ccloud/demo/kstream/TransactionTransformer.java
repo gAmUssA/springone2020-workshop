@@ -53,8 +53,24 @@ public class TransactionTransformer
 
   @Override
   public TransactionResult transform(Transaction transaction) {
-    // TODO: implement me!!!
-    return null;
+
+    if (transaction.getType().equals(Transaction.Type.DEPOSIT)) {
+      return new TransactionResult(transaction,
+                                   depositFunds(transaction),
+                                   true,
+                                   null);
+    }
+
+    if (hasEnoughFunds(transaction)) {
+      return new TransactionResult(transaction, withdrawFunds(transaction), true, null);
+    }
+
+    log.info("Not enough funds for account {}.", transaction.getAccount());
+
+    return new TransactionResult(transaction,
+                                 getFunds(transaction.getAccount()),
+                                 false,
+                                 TransactionResult.ErrorType.INSUFFICIENT_FUNDS);
   }
 
   private Funds updateFunds(String account, BigDecimal amount) {
