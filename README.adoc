@@ -22,6 +22,14 @@ Viktor Gamov <viktor@confluent.io>, © 2020 Confluent, Inc.
 :highlightjs-theme: idea
 :experimental:
 :imagesdir: ./images
+ifndef::awestruct[]
+:imagesdir: ../images
+:awestruct-draft: false
+:awestruct-layout: post
+:awestruct-tags: []
+:idprefix:
+:idseparator: -
+endif::awestruct[]
 
 Developing Event-driven Microservices with Spring Boot, Confluent Cloud, Kotlin, and Java.
 
@@ -167,7 +175,7 @@ To validate the status of the connector, you can run
 . Inside of this environment, you should see a cluster that looks like`demo-kafka-cluster-<some-number>.`
 On the left side, click on 'Topics.`
 . Click on the `account` topic and access the `messages` tab.
-. Click on the `offset` textbox and type `0` and press Enter the user interface to load all messages from partition `0` starting from _ _ __ `0`.
+. Click on the `offset` textbox and type `0` and press Enter the user interface to load all messages from partition `0` starting from `0`.
 
 With the connector running, you should see `account` events in the user interface.
 
@@ -223,7 +231,7 @@ The `transform` method also updates the `store` State Store.
 The class already has utility functions to help you execute our business logic.
 
 [WARNING]
-. "Help me! I can't figure out what code to modify!"
+."Help me! I can't figure out what code to modify!"
 ====
 If you are stuck on this exercise, you can switch to the `solution-transformer` branch:
 
@@ -406,16 +414,18 @@ without having to compile and run any custom software.
 
 image::transaction-statement-overview.png[Transaction Statements]
 
+[TIP]
 .Connect to ksqlDB with CLI
-****
+====
 In this exercise, we're going to use ksqlDB Cloud UI.
 But you also can run CLI using docker.
 
+[source,shell script]
 ----
 docker run -it confluentinc/ksqldb-cli:0.11.0 ksql -u $KSQL_API_KEY -p $KSQL_API_SECRET $KSQLDB_ENDPOINT
 ----
 
-****
+====
 
 === Create the account table
 
@@ -425,13 +435,12 @@ docker run -it confluentinc/ksqldb-cli:0.11.0 ksql -u $KSQL_API_KEY -p $KSQL_API
 // ccloud kafka cluster list
 // ccloud ksql app configure-acls lksqlc-7k6dj account --cluster lkc-nro63
 
-ksqlDB is built on top of Kafka Streams. As such, the `KStream` and `KTable` are
-both key constructs for defining stream processors.
+ksqlDB is built on top of Kafka Streams. As such, the `KStream` and `KTable` are both key constructs for defining stream processors.
 
-The first step requires us to instruct ksqlDB that we wish to turn the `account.`
-topic into a `Table.` This table will allow us to join each
-`transaction-success` event with the latest `account` event of the underlying
-topic. Run the following command in your ksqlDB CLI terminal:
+The first step requires us to instruct ksqlDB that we wish to turn the `account` topic into a `Table`. 
+This table will allow us to join each `transaction-success` event with the latest `account` event of the underlying
+topic. 
+Run the following command in your ksqlDB CLI terminal:
 
 [source,sql]
 ----
@@ -454,8 +463,7 @@ CREATE TABLE ACCOUNT (
 
 === Create the transaction-success stream
 
-Before we create the `Transaction Statement` stream processor, we must also
-inform ksqlDB that we wish to turn the `transaction-success` into a `Stream.`
+Before we create the `Transaction Statement` stream processor, we must also inform ksqlDB that we wish to turn the `transaction-success` into a `Stream.`
 Run the following command in your ksqlDB CLI terminal:
 
 [source,sql]
@@ -474,19 +482,15 @@ CREATE STREAM TRANSACTION_SUCCESS (
 
 === Create the transaction statement stream
 
-Now that we have all the ingredients of our `Transaction Statement` stream
-processor, we can now create a new stream derived from our `transaction-success.`
-events paired with the latest data from the `account` topic. We will instruct
-ksqlDB to create a new stream as a query. By default, ksqlDB will publish any
-output to a new `TRANSACTION_STATEMENT` topic. The select query provides the
-details about with events to subscribe and which table to join each
-notification. The output of this new stream processor will be a mix of the
-transaction details coupled with all the matching account details. The
-key from `transaction-success` and `account` will be used as matching criteria
-for the `LEFT JOIN` command. `EMIT CHANGES` informs ksqlDB that the query is
-long-running and should be kept alive–as if it were a Kafka Streams application
-to be 100% available to process all events. Run the following command in your
-ksqlDB CLI terminal:
+Now that we have all the ingredients of our `Transaction Statement` stream processor, we can now create a new stream derived from our `transaction-success` events paired with the latest data from the `account` topic. 
+We will instruct ksqlDB to create a new stream as a query. 
+By default, ksqlDB will publish any output to a new `TRANSACTION_STATEMENT` topic. 
+The select query provides the details about with events to subscribe and which table to join each
+notification. 
+The output of this new stream processor will be a mix of the transaction details coupled with all the matching account details. 
+The key from `transaction-success` and `account` will be used as matching criteria for the `LEFT JOIN` command. 
+`EMIT CHANGES` informs ksqlDB that the query is long-running and should be kept alive–as if it were a Kafka Streams application to be 100% available to process all events. 
+Run  the following command in your ksqlDB CLI prompt:
 
 [source,sql]
 ----
@@ -504,11 +508,10 @@ CREATE STREAM TRANSACTION_STATEMENT AS
 . From the main screen, navigate to environment that looks like
 `demo-env-<some-number>`.
 
-. Inside of this environment, you should see a cluster that looks like
-`demo-kafka-cluster-<some-number>`. On the left side, click on `Topics.`
+. Inside of this environment, you should see a cluster that looks like `demo-kafka-cluster-<some-number>`. 
+. On the left side, click on `Topics.`
 . Click on the `TRANSACTION_STATEMENT` topic and access the `messages` tab.
-. Click on the `offset` textbox and type `0` and press enter to instruct C3 to
-load all messages from partition 0 starting from offset 0.
+. Click on the `offset` textbox and type `0` and press enter to load all messages from partition 0 starting from offset `0`.
 
 image::transaction-statements.png[c3-transaction-statements]
 
@@ -517,8 +520,9 @@ image::transaction-statements.png[c3-transaction-statements]
 Congratulations! Now you know how to build event-driven microservices using
 Spring Boot, Kafka Streams, and ksqlDB.
 
+[WARNING]
 .Don't forget to clean up
-****
+====
 
 [source,shell script]
 ----
@@ -529,7 +533,7 @@ $ ./ccloud_stack_destroy.sh  stack-configs/java-service-account-103523.config #<
 <1> Stop a connector and database
 <2> Destroy ccloud stack to avoid unexpected charges.
 
-****
+====
 
 == Special Thanks! 
 

@@ -1,3 +1,4 @@
 rootProject.name = 'kstreams-ksqldb-workshop'
 include(':data-generator')
 include(':kstreams-demo')
+include(':kstreams-demo-kotlin')
